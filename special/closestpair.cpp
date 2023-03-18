@@ -13,9 +13,9 @@ struct closest_pair
 {
     point p_1, p_2;
     double distance;
-    closest_pair(point first, point second, double dist) : distance(dist)
+    closest_pair(point first = {0, 0}, point second = {0, 0}, double dist = 0) : distance(dist)
     {
-        if (first.x > second.x || (first.x == second.x && first.y > second.y))
+        if (first.x < second.x || (first.x == second.x && first.y < second.y))
         {
             p_1 = first;
             p_2 = second;
@@ -28,9 +28,20 @@ struct closest_pair
     }
 };
 
+void print_plist(point *plist, int len, string msg)
+{
+    cout << "||----" << msg << "----||" << endl;
+    cout << "==================================" << endl;
+    for (int i = 0; i < len; i++)
+    {
+        cout << "(" << plist[i].x << ", " << plist[i].y << ")" << endl;
+    }
+    cout << "==================================" << endl;
+}
+
 double get_dist(point p_1, point p_2)
 {
-    return sqrt(pow((p_1.x - p_2.x), 2) + pow((p_1.y - p_2.y), 2));
+    return sqrt(pow(p_1.x - p_2.x, 2) + pow(p_1.y - p_2.y, 2));
 }
 
 void merge(point *point_list, int left, int mid, int right, bool wrt_x = false)
@@ -79,7 +90,6 @@ void merge(point *point_list, int left, int mid, int right, bool wrt_x = false)
     {
         point_list[left + i] = tempArr[i];
     }
-    // delete[] tempArr;
 }
 
 void sort_points(point *point_list, int left, int right, bool wrt_x = false, bool wrt_y = false)
@@ -129,6 +139,8 @@ double get_min_dist(double v_1, double v_2)
 
 closest_pair get_closest_pair(point *x_sorted_list, point *y_sorted_list, int len)
 {
+    // print_plist(x_sorted_list, len, "Recursion list sorted x");
+    // print_plist(y_sorted_list, 10, "Sorted Y");
     if (len == 1)
     {
         cerr << "Input Error: Only one point given" << endl;
@@ -146,7 +158,7 @@ closest_pair get_closest_pair(point *x_sorted_list, point *y_sorted_list, int le
         // return minimum of the three possible distances
         double dist_1 = get_dist(x_sorted_list[0], x_sorted_list[1]);
         double dist_2 = get_dist(x_sorted_list[0], x_sorted_list[2]);
-        double dist_3 = get_dist(x_sorted_list[1], x_sorted_list[1]);
+        double dist_3 = get_dist(x_sorted_list[1], x_sorted_list[2]);
 
         double temp_min_dist = get_min_dist(dist_1, dist_2);
         temp_min_dist = get_min_dist(temp_min_dist, dist_3);
@@ -166,26 +178,29 @@ closest_pair get_closest_pair(point *x_sorted_list, point *y_sorted_list, int le
     }
     else
     {
+        double min_dist;
+        closest_pair final_pair;
+        point mid_point = x_sorted_list[len / 2];
+        closest_pair left_closest_pair = get_closest_pair(x_sorted_list, y_sorted_list, len / 2);
+        closest_pair right_closest_pair = get_closest_pair(x_sorted_list + len, y_sorted_list, len - len / 2);
+        (left_closest_pair.distance <= right_closest_pair.distance)
+            ? (final_pair = left_closest_pair,
+               min_dist = left_closest_pair.distance)
+            : (final_pair = left_closest_pair,
+               min_dist = left_closest_pair.distance);
 
-        // cout << "hello from else" << endl;
-        double left_min_dist = get_closest_pair(x_sorted_list, y_sorted_list, len / 2).distance;
-        double right_min_dist = get_closest_pair(x_sorted_list + len / 2, y_sorted_list, len - len / 2).distance;
-        double min_dist = get_min_dist(left_min_dist, right_min_dist);
-
-        closest_pair final_pair = {0, 0, 0};
-        // perform comparisons in the strip
-        for (int i = 0; i < len; i++)
+        const int list_len = sizeof(y_sorted_list) / sizeof(point);
+        for (int i = 0; i < sizeof(y_sorted_list) / sizeof(point); i++)
         {
-            if (y_sorted_list[i].x <= x_sorted_list[len - 1].x && y_sorted_list[i].x >= x_sorted_list[0].x)
+            if (y_sorted_list[i].x <= mid_point.x + min_dist && y_sorted_list[i].x >= mid_point.x - min_dist)
             {
-                // compare with the next seven points
-                for (int j = 1; (j <= num_of_comparisons) && ((i + j) < len); j++)
+                for (int j = 1; j <= num_of_comparisons && j < list_len; j++)
                 {
-                    double dist_in_strip = get_dist(y_sorted_list[i], y_sorted_list[i + j]);
-                    if (dist_in_strip <= min_dist)
+                    double temp_dist = get_dist(y_sorted_list[i], y_sorted_list[i + j]);
+                    if (temp_dist <= min_dist)
                     {
-                        min_dist = dist_in_strip;
-                        final_pair = {y_sorted_list[i], y_sorted_list[i + j], dist_in_strip};
+                        min_dist = temp_dist;
+                        final_pair = {y_sorted_list[i], y_sorted_list[i + j], temp_dist};
                     }
                 }
             }
@@ -209,6 +224,7 @@ int main()
                           {-17, 18}};
 
     int len = sizeof(point_list) / sizeof(point);
+    // print_plist(point_list, len, "The OG List");
     point sorted_wrt_x[len];
     for (int i = 0; i < len; i++)
     {
@@ -223,6 +239,9 @@ int main()
     // rationale behind separate flags for wrt_x and wrt_y: more clarity
     sort_points(sorted_wrt_x, 0, len - 1, true, false);
     sort_points(sorted_wrt_y, 0, len - 1, false, true);
+
+    // print_plist(sorted_wrt_x, len, "Sorted WRT X");
+    // print_plist(sorted_wrt_y, len, "Sorted WRT Y");
 
     closest_pair cp = get_closest_pair(sorted_wrt_x, sorted_wrt_y, len);
 
