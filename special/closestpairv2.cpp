@@ -3,7 +3,11 @@
 #include <iostream>
 #include <vector>
 #define num_of_comparisons 7
-using namespace std;
+
+using std::cerr;
+using std::cout;
+using std::endl;
+using std::vector;
 
 struct point
 {
@@ -203,20 +207,19 @@ closest_pair get_closest_pair(point *x_sorted_list, point *y_sorted_list, int le
     }
 }
 
-vector<point> get_data_from_file(string filename)
+vector<point> get_data_from_file(std::string filename)
 {
-    int len;
-    ifstream infile;
+    std::ifstream infile;
     infile.open(filename);
     vector<point> point_list;
     if (infile.is_open())
     {
+        int len; // not useful with vector
         infile >> len;
         int index = 0;
-        while (!infile.eof())
+        double x, y;
+        while (infile >> x >> y)
         {
-            double x, y;
-            infile >> x >> y;
             point_list.push_back({x, y});
         }
         infile.close();

@@ -1,5 +1,6 @@
 #include <cmath>
 #include <vector>
+#include <fstream>
 #include <iostream>
 #include <algorithm>
 #define num_of_comparisons 7
@@ -34,22 +35,12 @@ struct closest_pair
     }
 };
 
-bool compare_wrt_x(point p_1, point p_2)
-{
-    return p_1.x < p_2.x;
-}
-
-bool compare_wrt_y(point p_1, point p_2)
-{
-    return p_1.y < p_2.y;
-}
-
 double get_dist(point p_1, point p_2)
 {
     return sqrt(pow(p_1.x - p_2.x, 2) + pow(p_1.y - p_2.y, 2));
 }
 
-closest_pair get_closest_pair(vector<point> x_sorted_list, vector<point> y_sorted_list)
+closest_pair get_closest_pair(vector<point> x_sorted_list, vector<point> &y_sorted_list)
 {
     if (x_sorted_list.size() == 1)
     {
@@ -127,24 +118,36 @@ closest_pair get_closest_pair(vector<point> x_sorted_list, vector<point> y_sorte
     }
 }
 
+vector<point> get_data_from_file(std::string filename)
+{
+    std::ifstream infile;
+    infile.open(filename);
+    vector<point> point_list;
+    if (infile.is_open())
+    {
+        int len; // not useful with vector
+        infile >> len;
+        int index = 0;
+        double x, y;
+        while (infile >> x >> y)
+        {
+            point_list.push_back({x, y});
+        }
+        infile.close();
+    }
+    return point_list;
+}
+
 int main()
 {
-    // sample points
-    vector<point> point_list = {{1, 2},
-                                {30, 40},
-                                {-4, 5},
-                                {6, -7},
-                                {-8, -9},
-                                {-10, 11},
-                                {11, -12},
-                                {-13, -14},
-                                {-15, 16},
-                                {-17, 18}};
-
+    const vector<point> point_list = get_data_from_file("randpts.txt");
     vector<point> sorted_wrt_x = point_list;
-    sort(sorted_wrt_x.begin(), sorted_wrt_x.end(), compare_wrt_x);
+    sort(sorted_wrt_x.begin(), sorted_wrt_x.end(), [](point p_1, point p_2)
+         { return p_1.x < p_2.x; });
+
     vector<point> sorted_wrt_y = point_list;
-    sort(sorted_wrt_y.begin(), sorted_wrt_y.end(), compare_wrt_y);
+    sort(sorted_wrt_y.begin(), sorted_wrt_y.end(), [](point p_1, point p_2)
+         { return p_1.y < p_2.y; });
 
     closest_pair cp = get_closest_pair(sorted_wrt_x, sorted_wrt_y);
 

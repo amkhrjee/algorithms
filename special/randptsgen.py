@@ -1,6 +1,6 @@
 import random
 point_list = []
-num_of_pts = 100
+num_of_pts = 1000
 
 for i in range(num_of_pts):
     point_list.append({
