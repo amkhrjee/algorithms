@@ -1,5 +1,6 @@
-#include <iostream>
 #include <cmath>
+#include <fstream>
+#include <iostream>
 #define num_of_comparisons 7
 using namespace std;
 
@@ -169,25 +170,19 @@ closest_pair get_closest_pair(point *x_sorted_list, point *y_sorted_list, int le
         closest_pair final_pair;
         point mid_point = x_sorted_list[len / 2];
         closest_pair left_closest_pair = get_closest_pair(x_sorted_list, y_sorted_list, len / 2);
-        closest_pair right_closest_pair = get_closest_pair(x_sorted_list + len / 2, y_sorted_list, len - len / 2);
-
-        if (left_closest_pair.distance < right_closest_pair.distance)
-        {
-            final_pair = left_closest_pair;
-            min_dist = left_closest_pair.distance;
-        }
-        else
-        {
-            final_pair = right_closest_pair;
-            min_dist = right_closest_pair.distance;
-        }
+        closest_pair right_closest_pair = get_closest_pair(x_sorted_list + len, y_sorted_list, len - len / 2);
+        (left_closest_pair.distance <= right_closest_pair.distance)
+            ? (final_pair = left_closest_pair,
+               min_dist = left_closest_pair.distance)
+            : (final_pair = left_closest_pair,
+               min_dist = left_closest_pair.distance);
 
         const int list_len = sizeof(y_sorted_list) / sizeof(point);
         for (int i = 0; i < sizeof(y_sorted_list) / sizeof(point); i++)
         {
             if (y_sorted_list[i].x <= mid_point.x + min_dist && y_sorted_list[i].x >= mid_point.x - min_dist)
             {
-                for (int j = 1; j <= num_of_comparisons && (i + j) < list_len; j++)
+                for (int j = 1; j <= num_of_comparisons && j < list_len; j++)
                 {
                     double temp_dist = get_dist(y_sorted_list[i], y_sorted_list[i + j]);
                     if (temp_dist <= min_dist)
@@ -202,20 +197,29 @@ closest_pair get_closest_pair(point *x_sorted_list, point *y_sorted_list, int le
     }
 }
 
+point *get_data_from_file(string filename)
+{
+    int len;
+    ifstream infile;
+    infile.open(filename);
+    if (infile.is_open())
+    {
+        point point_list[len];
+        infile >> len;
+        int index = 0;
+        while (!infile.eof())
+        {
+            double x, y;
+            infile >> x >> y;
+            point_list[index++] = {x, y};
+        }
+        infile.close();
+        return point_list;
+    }
+}
 int main()
 {
-    // sample points
-    point point_list[] = {{1, 2},
-                          {30, 40},
-                          {-4, 5},
-                          {6, -7},
-                          {-8, -9},
-                          {-10, 11},
-                          {11, -12},
-                          {-13, -14},
-                          {-15, 16},
-                          {-17, 18}};
-
+    const point *point_list = get_data_from_file("randpts.txt");
     int len = sizeof(point_list) / sizeof(point);
     point sorted_wrt_x[len];
     for (int i = 0; i < len; i++)
