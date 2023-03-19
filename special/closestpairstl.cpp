@@ -1,9 +1,13 @@
-#include <iostream>
 #include <cmath>
 #include <vector>
+#include <iostream>
 #include <algorithm>
 #define num_of_comparisons 7
-using namespace std;
+
+using std::cerr;
+using std::cout;
+using std::endl;
+using std::vector;
 
 struct point
 {
@@ -30,6 +34,16 @@ struct closest_pair
     }
 };
 
+bool compare_wrt_x(point p_1, point p_2)
+{
+    return p_1.x < p_2.x;
+}
+
+bool compare_wrt_y(point p_1, point p_2)
+{
+    return p_1.y < p_2.y;
+}
+
 double get_dist(point p_1, point p_2)
 {
     return sqrt(pow(p_1.x - p_2.x, 2) + pow(p_1.y - p_2.y, 2));
@@ -55,8 +69,8 @@ closest_pair get_closest_pair(vector<point> x_sorted_list, vector<point> y_sorte
         double dist_2 = get_dist(x_sorted_list[0], x_sorted_list[2]);
         double dist_3 = get_dist(x_sorted_list[1], x_sorted_list[2]);
 
-        double temp_min_dist = min(dist_1, dist_2);
-        temp_min_dist = min(temp_min_dist, dist_3);
+        double temp_min_dist = std::min(dist_1, dist_2);
+        temp_min_dist = std::min(temp_min_dist, dist_3);
 
         if (dist_1 == temp_min_dist)
         {
@@ -113,14 +127,6 @@ closest_pair get_closest_pair(vector<point> x_sorted_list, vector<point> y_sorte
     }
 }
 
-bool compare_wrt_x(point p_1, point p_2)
-{
-    return p_1.x < p_2.x;
-}
-bool compare_wrt_y(point p_1, point p_2)
-{
-    return p_1.y < p_2.y;
-}
 int main()
 {
     // sample points
