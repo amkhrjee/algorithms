@@ -1,6 +1,7 @@
 #include <cmath>
 #include <vector>
 #include <fstream>
+#include <limits>
 #include <iostream>
 #include <algorithm>
 #define num_of_comparisons 7
@@ -150,6 +151,17 @@ int main()
          { return p_1.y < p_2.y; });
 
     closest_pair cp = get_closest_pair(sorted_wrt_x, sorted_wrt_y);
-
-    cout << "Closest pair: p_1(" << cp.p_1.x << ", " << cp.p_1.y << "), p_2(" << cp.p_2.x << ", " << cp.p_2.y << ") d = " << cp.distance << endl;
+    // prints double upto max precision
+    typedef std::numeric_limits<double> dbl;
+    cout.precision(dbl::max_digits10);
+    cout << "Closest pair: p_1("
+         << cp.p_1.x
+         << ", "
+         << cp.p_1.y
+         << "), p_2("
+         << cp.p_2.x
+         << ", "
+         << cp.p_2.y
+         << ") d = "
+         << cp.distance << endl;
 }

@@ -1,6 +1,8 @@
+# current  problem: generates duplicate values for large(>10**5) data sets
+
 import random
 point_list = []
-num_of_pts = 1000
+num_of_pts = int(input("Enter number of points: "))
 
 for i in range(num_of_pts):
     point_list.append({
