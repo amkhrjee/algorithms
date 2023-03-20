@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 #define maxchar 1024
 #define num_of_pts 10
 #define filename "randpts.txt"
@@ -10,15 +11,6 @@ struct point
 };
 typedef struct point point;
 typedef point *plist;
-
-// // functions prescribed as must include:
-// void read_points(FILE *stream, plist *l, int n);
-// void closest_pair(const plist *list_x, const plist *list_y, point *p1, point *p2, double *d);
-// void split_list_x(const plist *l, plist *left, plist *right);
-// void split_list_y(const plist *l, const plist *x_left, const plist *x_right, plist *y_left, plist *y_right);
-// void make_slab_l(const plist *list_y, plist *slab_l, double x_mid, double delta);
-// void make_slab_r(const plist *list_y, plist *slab_r, double x_mid, double delta);
-// void across_pair(const plist *slab_l, const plist *slab_l, point *p1, point *p2, double *d);
 
 void read_points(FILE *stream, plist l, int n)
 {
@@ -117,6 +109,70 @@ void plist_sort(plist pts_list, int left, int right, int flag)
     }
 }
 
+double get_dist(point p1, point p2)
+{
+    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
+}
+
+void closets_pair_brute_force(const plist xlist, point *p1, point *p2, double *dist)
+{
+    *dist = INFINITY;
+    for (int i = 0; i < num_of_pts; i++)
+    {
+        for (int j = 0; i < num_of_pts; j++)
+        {
+            if ((xlist[i].x != xlist[j].x) && (xlist[i].y != xlist[j].y))
+            {
+                double temp_dist = get_dist(xlist[i], xlist[j]);
+                if (*dist < temp_dist)
+                {
+                    *dist = temp_dist;
+                    // add printing logic here
+                    *p1 = xlist[i];
+                    *p2 = xlist[j];
+                }
+            }
+        }
+    }
+}
+
+void closest_pair(const plist xlist, const plist ylist, point *p1, point *p2, double *dist)
+{
+    if (num_of_pts <= 3)
+    {
+        closets_pair_brute_force(xlist, p1, p2, dist);
+    }
+    plist x_left, x_right, y_left, y_right;
+    double x_mid;
+
+    split_list_x(xlist, x_left, x_right);
+    split_list_y(ylist, x_left, x_right, y_left, y_right);
+
+    // left part
+    point p1_left, p2_left;
+    double d_left;
+    closest_pair(x_left, y_left, &p1_left, &p2_left, &d_left);
+    // right part
+    point p1_right, p2_right;
+    double d_right;
+    closest_pair(x_right, y_right, &p1_right, &p2_right, &d_right);
+
+    double delta;
+    if (d_left < d_right)
+    {
+        delta = d_left;
+    }
+    else
+    {
+        delta = d_right;
+    }
+    plist slab_l, slab_r;
+
+    make_slab_l(y_left, slab_l, x_mid, delta);
+    make_slab_r(y_right, slab_r, x_mid, delta);
+
+    across_pair(slab_l, slab_r, p1, p2, dist);
+}
 int main()
 {
     FILE *randf = fopen(filename, "r");
@@ -138,13 +194,18 @@ int main()
     plist_sort(list_x, 0, num_of_pts - 1, wrt_x);
     plist_sort(list_y, 0, num_of_pts - 1, wrt_y);
 
-    for (int i = 0; i < num_of_pts; i++)
-    {
-        printf("(%lf, %lf)\n", list_x[i].x, list_x[i].y);
-    }
-    printf("=================================\n");
-    for (int i = 0; i < num_of_pts; i++)
-    {
-        printf("(%lf, %lf)\n", list_y[i].x, list_y[i].y);
-    }
+    point p1, p2;
+    double dist;
+
+    closest_pair(list_x, list_y, &p1, &p2, &dist);
+
+    // for (int i = 0; i < num_of_pts; i++)
+    // {
+    //     printf("(%lf, %lf)\n", list_x[i].x, list_x[i].y);
+    // }
+    // printf("=================================\n");
+    // for (int i = 0; i < num_of_pts; i++)
+    // {
+    //     printf("(%lf, %lf)\n", list_y[i].x, list_y[i].y);
+    // }
 }
