@@ -1,7 +1,7 @@
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <math.h>
 #define maxchar 1024
 #define num_of_pts 10
 #define filename "randpts.txt"
@@ -127,13 +127,100 @@ void closets_pair_brute_force(const plist xlist, point *p1, point *p2, double *d
                 if (*dist < temp_dist)
                 {
                     *dist = temp_dist;
-                    // add printing logic here
                     *p1 = xlist[i];
                     *p2 = xlist[j];
                 }
             }
         }
     }
+}
+
+void split_list_x(plist xlist, plist x_left, plist x_right)
+{
+    // xlist is already sorted
+    int len = (sizeof(xlist) / sizeof(point));
+    int half_len = len / 2;
+    // memory allocation
+    x_left = malloc(sizeof(point) * half_len);
+    x_right = malloc(sizeof(point) * half_len);
+    // put stuff into x_left and x_right
+    for (int i = 0, j = half_len; i < half_len, j < len; i++, j++)
+    {
+        x_left[i] = xlist[i];
+        x_right[j] = xlist[j];
+    }
+}
+
+void split_list_y(plist ylist, double x_mid, plist y_left, plist y_right)
+{
+    // ylist is already sorted
+    // put things in y_left and y_right that are in x_left and x_right
+    // but in the order of ylist
+    int len = sizeof(ylist) / sizeof(point);
+    // memory allocation
+    y_left = malloc(sizeof(point) * (len / 2));
+    y_right = malloc(sizeof(point) * (len / 2));
+    // putting things in y_left
+    int left_index, right_index;
+    left_index = right_index = 0;
+    for (int i = 0; i < len; i++)
+    {
+        if (ylist[i].x < x_mid)
+        {
+            y_left[left_index++] = ylist[i];
+        }
+        else
+        {
+            y_right[right_index++] = ylist[i];
+        }
+    }
+}
+
+void make_slab_l(const plist y_left, plist slab_l, double x_mid, double delta)
+{
+    slab_l = malloc(sizeof(y_left) / sizeof(point));
+    int slab_index = 0;
+    for (int i = 0; i < (sizeof(y_left) / sizeof(point)); i++)
+    {
+        if (y_left[i].x >= x_mid - delta)
+        {
+            slab_l[slab_index++] = y_left[i];
+        }
+    }
+}
+
+void make_slab_r(plist y_right, plist slab_r, double x_mid, double delta)
+{
+    slab_r = malloc(sizeof(y_right) / sizeof(point));
+    int slab_index = 0;
+    for (int i = 0; i < (sizeof(y_right) / sizeof(point)); i++)
+    {
+        if (y_right[i].x <= x_mid + delta)
+        {
+            slab_r[slab_index++] = y_right[i];
+        }
+    }
+}
+
+void across_pair(plist slab_l, plist slab_r, point *p1, point *p2, double *dist)
+{
+    // for every point in the slab_l, check next 4 points in slab_r?
+    double min_dist = INFINITY;
+    int len = sizeof(slab_l) / sizeof(point);
+    for (int i = 0; i < len; i++)
+    {
+        for (int j = i; i < (i + 4); j++)
+        {
+            double temp_dist = get_dist(slab_l[i], slab_r[j]);
+            if (temp_dist < min_dist)
+            {
+                min_dist = temp_dist;
+                *p1 = slab_l[i];
+                *p2 = slab_r[j];
+            }
+        }
+    }
+    *dist = min_dist;
 }
 
 void closest_pair(const plist xlist, const plist ylist, point *p1, point *p2, double *dist)
@@ -143,10 +230,10 @@ void closest_pair(const plist xlist, const plist ylist, point *p1, point *p2, do
         closets_pair_brute_force(xlist, p1, p2, dist);
     }
     plist x_left, x_right, y_left, y_right;
-    double x_mid;
+    double x_mid = xlist[sizeof(xlist) / 2 - 1].x;
 
     split_list_x(xlist, x_left, x_right);
-    split_list_y(ylist, x_left, x_right, y_left, y_right);
+    split_list_y(ylist, x_mid, y_left, y_right);
 
     // left part
     point p1_left, p2_left;
@@ -166,6 +253,7 @@ void closest_pair(const plist xlist, const plist ylist, point *p1, point *p2, do
     {
         delta = d_right;
     }
+
     plist slab_l, slab_r;
 
     make_slab_l(y_left, slab_l, x_mid, delta);
@@ -199,13 +287,22 @@ int main()
 
     closest_pair(list_x, list_y, &p1, &p2, &dist);
 
-    // for (int i = 0; i < num_of_pts; i++)
-    // {
-    //     printf("(%lf, %lf)\n", list_x[i].x, list_x[i].y);
-    // }
-    // printf("=================================\n");
-    // for (int i = 0; i < num_of_pts; i++)
-    // {
-    //     printf("(%lf, %lf)\n", list_y[i].x, list_y[i].y);
-    // }
+    // printing logic
+    if (p1.x == p2.x)
+    {
+        if (p1.y > p2.y)
+        {
+            point temp = p1;
+            p1 = p2;
+            p2 = temp;
+        }
+    }
+    else if (p1.x > p2.x)
+    {
+        point temp = p1;
+        p1 = p2;
+        p2 = temp;
+    }
+
+    printf("Closetst pair: p1(%lf, %lf) p2(%lf, %lf) d = %lf", p1.x, p1.y, p2.x, p2.y, dist);
 }
