@@ -50,6 +50,11 @@ int get_input_size(FILE *stream)
         return atoi(line);
         // don't close the file yet
     }
+    else
+    {
+        fprintf(stderr, "File error: Couldn't open file\n");
+        exit(1);
+    }
 }
 
 void assign_point(point *lvalue, point *rvalue)
