@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/a.out",
+            "program": "/home/amkhrjee/algorithms/special/a.out",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

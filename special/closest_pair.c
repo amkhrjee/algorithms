@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdlib.h>
 #define maxchar 1024
-#define num_of_pts 11
 #define filename "randpts.txt"
 struct point
 {
@@ -39,6 +38,17 @@ void read_points(FILE *stream, plist l, int n)
     {
         fprintf(stderr, "File error: Couldn't open file\n");
         exit(1);
+    }
+}
+
+int get_input_size(FILE *stream)
+{
+    if (stream != NULL)
+    {
+        char line[maxchar];
+        fgets(line, sizeof(line), stream);
+        return atoi(line);
+        // don't close the file yet
     }
 }
 
@@ -198,10 +208,7 @@ void across_pair(plist slab_l, plist slab_r, point *p1, point *p2, double *dist,
     double min_dist = delta;
     for (int i = 0; i < lslab_len; i++)
     {
-        assign_point(p1, &slab_l[i]);
-        assign_point(p2, &slab_l[i + 1]);
-
-        for (int j = 0; j < (i + 2) && (j < rslab_len); j++)
+        for (int j = 0; j < (i + 10) && (j < rslab_len); j++)
         {
             double temp_dist = get_dist(slab_l[i], slab_r[j]);
 
@@ -210,8 +217,10 @@ void across_pair(plist slab_l, plist slab_r, point *p1, point *p2, double *dist,
                 min_dist = temp_dist;
 
                 assign_point(p1, &slab_l[i]);
+                printf("Assigned p1: (%lf, %lf)\n", p1->x, p1->y);
 
                 assign_point(p2, &slab_r[j]);
+                printf("Assigned p2: (%lf, %lf)\n", p2->x, p2->y);
             }
         }
     }
@@ -260,6 +269,7 @@ void closest_pair(const plist xlist, const plist ylist, point *p1, point *p2, do
 int main()
 {
     FILE *randf = fopen(filename, "r");
+    int num_of_pts = get_input_size(randf);
     point list_x[num_of_pts];
     point list_y[num_of_pts];
     read_points(randf, list_x, num_of_pts);
