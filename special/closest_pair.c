@@ -217,10 +217,8 @@ void across_pair(plist slab_l, plist slab_r, point *p1, point *p2, double *dist,
                 min_dist = temp_dist;
 
                 assign_point(p1, &slab_l[i]);
-                printf("Assigned p1: (%lf, %lf)\n", p1->x, p1->y);
 
                 assign_point(p2, &slab_r[j]);
-                printf("Assigned p2: (%lf, %lf)\n", p2->x, p2->y);
             }
         }
     }
@@ -253,10 +251,14 @@ void closest_pair(const plist xlist, const plist ylist, point *p1, point *p2, do
     if (d_left < d_right)
     {
         delta = d_left;
+        assign_point(p1, &p1_left);
+        assign_point(p2, &p2_left);
     }
     else
     {
         delta = d_right;
+        assign_point(p1, &p1_right);
+        assign_point(p2, &p2_right);
     }
 
     point slab_l[len / 2], slab_r[len - len / 2];
@@ -293,5 +295,22 @@ int main()
 
     closest_pair(list_x, list_y, &p1, &p2, &dist, num_of_pts);
 
-    printf("Closest pair: p1(%lf, %lf) p2(%lf, %lf) d = %lf\n", p1.x, p1.y, p2.x, p2.y, dist);
+    // priniting logic
+    if (p1.x == p2.x)
+    {
+        if (p1.y > p2.y)
+        {
+            point temp;
+            assign_point(&temp, &p1);
+            assign_point(&p1, &p2);
+            assign_point(&p2, &temp);
+        }
+    }
+
+    printf("Closest pair: p1(%lf, %lf) p2(%lf, %lf) d = %lf\n",
+           p1.x,
+           p1.y,
+           p2.x,
+           p2.y,
+           dist);
 }
