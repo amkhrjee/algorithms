@@ -127,7 +127,6 @@ void closets_pair_brute_force(const plist xlist, point *p1, point *p2, double *d
         for (int j = i + 1; j < len; j++)
         {
             double temp_dist = get_dist(xlist[i], xlist[j]);
-            printf("Comparing (%lf, %lf) with (%lf, %lf) and d = %lf\n", xlist[i].x, xlist[i].y, xlist[j].x, xlist[j].y, temp_dist);
 
             if (*dist > temp_dist)
             {
@@ -176,7 +175,6 @@ int make_slab_l(const plist y_left, plist slab_l, double x_mid, double delta, in
         if (y_left[i].x > x_mid - delta)
         {
             assign_point(&slab_l[slab_index++], &y_left[i]);
-            // printf("R: %d", slab_index);
         }
     }
     return slab_index;
@@ -190,7 +188,6 @@ int make_slab_r(plist y_right, plist slab_r, double x_mid, double delta, int len
         if (y_right[i].x < x_mid + delta)
         {
             assign_point(&slab_r[slab_index++], &y_right[i]);
-            // printf("L: %d", slab_index);
         }
     }
     return slab_index;
@@ -202,12 +199,11 @@ void across_pair(plist slab_l, plist slab_r, point *p1, point *p2, double *dist,
     for (int i = 0; i < lslab_len; i++)
     {
         assign_point(p1, &slab_l[i]);
-
         assign_point(p2, &slab_l[i + 1]);
+
         for (int j = 0; j < (i + 2) && (j < rslab_len); j++)
         {
             double temp_dist = get_dist(slab_l[i], slab_r[j]);
-            printf("Comparing (%lf, %lf) with (%lf, %lf) and d = %lf\n", slab_l[i].x, slab_l[i].y, slab_r[j].x, slab_r[j].y, temp_dist);
 
             if (temp_dist < min_dist)
             {
@@ -224,11 +220,8 @@ void across_pair(plist slab_l, plist slab_r, point *p1, point *p2, double *dist,
 
 void closest_pair(const plist xlist, const plist ylist, point *p1, point *p2, double *dist, int len)
 {
-    printf("len = %d\n", len);
-
     if (len <= 3)
     {
-        printf("Entering here!\n");
         closets_pair_brute_force(xlist, p1, p2, dist, len);
         return;
     }
@@ -237,28 +230,6 @@ void closest_pair(const plist xlist, const plist ylist, point *p1, point *p2, do
 
     split_list_x(xlist, x_left, x_right, len);
     split_list_y(ylist, x_mid, y_left, y_right, len);
-
-    for (int i = 0; i < len / 2; i++)
-    {
-        printf("(%lf, %lf)\n", x_left[i].x, x_left[i].y);
-    }
-    printf("========================================\n");
-    for (int i = 0; i < len - len / 2; i++)
-    {
-        printf("(%lf, %lf)\n", x_right[i].x, x_right[i].y);
-    }
-    printf("========================================\n");
-    printf("========================================\n");
-
-    for (int i = 0; i < len / 2; i++)
-    {
-        printf("(%lf, %lf)\n", y_left[i].x, y_left[i].y);
-    }
-    printf("========================================\n");
-    for (int i = 0; i < len - len / 2; i++)
-    {
-        printf("(%lf, %lf)\n", y_right[i].x, y_right[i].y);
-    }
 
     // left part
     point p1_left, p2_left;
@@ -269,9 +240,6 @@ void closest_pair(const plist xlist, const plist ylist, point *p1, point *p2, do
     double d_right;
     closest_pair(x_right, y_right, &p1_right, &p2_right, &d_right, len - len / 2);
 
-    printf("Dl = %lf\n", d_left);
-    printf("Dr = %lf\n", d_right);
-
     double delta;
     if (d_left < d_right)
     {
@@ -281,24 +249,11 @@ void closest_pair(const plist xlist, const plist ylist, point *p1, point *p2, do
     {
         delta = d_right;
     }
-    printf("Delta = %lf\n", delta);
 
     point slab_l[len / 2], slab_r[len - len / 2];
 
     int l_slab_len = make_slab_l(y_left, slab_l, x_mid, delta, len / 2);
     int r_slab_len = make_slab_r(y_right, slab_r, x_mid, delta, len - len / 2);
-    // printf("%d", l_slab_len);
-    // printf("%d", r_slab_len);
-
-    for (int i = 0; i < l_slab_len; i++)
-    {
-        printf("(%lf, %lf)\n", slab_l[i].x, slab_l[i].y);
-    }
-    printf("========================================\n");
-    for (int i = 0; i < r_slab_len; i++)
-    {
-        printf("(%lf, %lf)\n", slab_r[i].x, slab_r[i].y);
-    }
 
     across_pair(slab_l, slab_r, p1, p2, dist, l_slab_len, r_slab_len, delta);
 }

@@ -1,9 +1,0 @@
-    for (int i = 0; i < num_of_pts; i++)
-    {
-        printf("(%lf, %lf)\n", list_x[i].x, list_x[i].y);
-    }
-    printf("========================================\n");
-    for (int i = 0; i < num_of_pts; i++)
-    {
-        printf("(%lf, %lf)\n", list_y[i].x, list_y[i].y);
-    }
