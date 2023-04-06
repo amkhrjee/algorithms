@@ -4,6 +4,7 @@
 #include <limits>
 #include <iostream>
 #include <algorithm>
+#define filename "randpts.txt"
 #define num_of_comparisons 7
 
 using std::cerr;
@@ -82,10 +83,8 @@ closest_pair get_closest_pair(vector<point> x_sorted_list, vector<point> &y_sort
         double min_dist;
         closest_pair final_pair;
         point mid_point = x_sorted_list[x_sorted_list.size() / 2];
-        closest_pair left_closest_pair = get_closest_pair(vector<point>(x_sorted_list.begin(), x_sorted_list.begin() + x_sorted_list.size() / 2),
-                                                          y_sorted_list);
-        closest_pair right_closest_pair = get_closest_pair(vector<point>(x_sorted_list.begin() + x_sorted_list.size() / 2, x_sorted_list.end()),
-                                                           y_sorted_list);
+        closest_pair left_closest_pair = get_closest_pair(vector<point>(x_sorted_list.begin(), x_sorted_list.begin() + x_sorted_list.size() / 2), y_sorted_list);
+        closest_pair right_closest_pair = get_closest_pair(vector<point>(x_sorted_list.begin() + x_sorted_list.size() / 2, x_sorted_list.end()), y_sorted_list);
 
         if (left_closest_pair.distance < right_closest_pair.distance)
         {
@@ -119,10 +118,10 @@ closest_pair get_closest_pair(vector<point> x_sorted_list, vector<point> &y_sort
     }
 }
 
-vector<point> get_data_from_file(std::string filename)
+vector<point> get_data_from_file(std::string file_name)
 {
     std::ifstream infile;
-    infile.open(filename);
+    infile.open(file_name);
     vector<point> point_list;
     if (infile.is_open())
     {
@@ -141,7 +140,7 @@ vector<point> get_data_from_file(std::string filename)
 
 int main()
 {
-    const vector<point> point_list = get_data_from_file("randpts.txt");
+    const vector<point> point_list = get_data_from_file(filename);
     vector<point> sorted_wrt_x = point_list;
     sort(sorted_wrt_x.begin(), sorted_wrt_x.end(), [](point p_1, point p_2)
          { return p_1.x < p_2.x; });
