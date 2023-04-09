@@ -13,6 +13,11 @@ struct point
     point(double x = 0, double y = 0) : x(x), y(y) {}
 };
 
+void plot(vector<point> boundary_pts)
+{
+    // plot with gnuplot
+}
+
 vector<point> set_boundary(vector<point> xlist, vector<point> ylist)
 {
     double l = ylist[0].y;
