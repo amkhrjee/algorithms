@@ -1,4 +1,9 @@
-customers = [10, 20, 30, 40, 5]
+# customers = [10, 20, 30, 40, 5]
+try:
+    with open("randpts.txt", "r") as file:
+        customers = [int(line.strip()) for line in file.readlines()]
+except IOError as ioerr:
+    print("File error: " + str(ioerr))
 
 
 def get_min(optimal_list):
@@ -35,5 +40,14 @@ def print_optimal_list(customers, optimal_list):
         print(optimal_list[each_counter])
 
 
-optimal_list = get_optimal_allocation(customers, 4)
-print_optimal_list(customers, optimal_list)
+def get_max_time(optimal_list):
+    max_time = 0
+    for counter in optimal_list:
+        if max_time < sum(optimal_list[counter]):
+            max_time = sum(optimal_list[counter])
+    return max_time
+
+
+optimal_list = get_optimal_allocation(customers, 10)
+# print_optimal_list(customers, optimal_list)
+print(get_max_time(optimal_list))
