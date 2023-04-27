@@ -1,5 +1,5 @@
 # algorithms
 
-This repo contains a collection of different algorithms, majorly from the book "Introduction to Algorithms" by CLRS. It also contains solutions to intersting algorithm problems that I have encountered, either inside or outside university workload.
+This repo is a collection of interesting algorithms I come across.
 
-I will be glad if you find this of any help.
+The implentations are purely made for fun and experimentation purposes and in no way meant to be used for any professional work.
