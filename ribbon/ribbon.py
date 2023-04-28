@@ -8,6 +8,8 @@ fragments = [
     "OGOY"
 ]
 
+# bruteforce
+
 
 def get_minimal_ribbon(fragments):
     sorted_frags = sorted(fragments, key=lambda frag: len(frag), reverse=True)
