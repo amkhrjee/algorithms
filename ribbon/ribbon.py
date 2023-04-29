@@ -28,7 +28,7 @@ def get_minimal_ribbon(fragments):
                     break
                 else:
                     max_common_chars -= 1
-            if flag == True:
+            if flag is True:
                 break
     return final_ribbon
 
